@@ -1,5 +1,5 @@
-DROP IF EXISTS user;
-DROP IF EXISTS quote;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS quote;
 
 
 CREATE TABLE user(
@@ -15,7 +15,7 @@ CREATE TABLE article(
     author_id INTEGER NOT NULL,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     title VARCHAR(80) UNIQUE NOT NULL,
-    content TEXT NOT NULL
+    content TEXT NOT NULL,
     FOREIGN KEY (author_id) REFERENCES user (id)
     ON DELETE CASCADE
 );
