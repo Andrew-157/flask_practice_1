@@ -11,7 +11,10 @@ migrate = Migrate()
 def create_app(test_config=None):
 
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object('config.DevelopmentConfig')
+    if app.debug:
+        app.config.from_object('config.DevelopmentConfig')
+    else:
+        app.config.from_object('config.ProductionConfig')
 
     db.init_app(app)
     migrate.init_app(app, db)
