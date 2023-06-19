@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 flask = "*"
 flask-sqlalchemy = "*"
+python-dotenv = "*"
+flask-migrate = "*"
+mysqlclient = "*"
 
 [dev-packages]
 autopep8 = "*"
