@@ -23,9 +23,14 @@ def create_app(test_config=None):
 
     # This import is necessary so that models
     # are detected by Flask-Migrate
-    from . import models
+    from . import models, auth, main
 
+    # Initialize database and migrations
     db.init_app(app)
     migrate.init_app(app, db)
+
+    # Register blueprints
+    app.register_blueprint(main.bp)
+    app.register_blueprint(auth.bp)
 
     return app
