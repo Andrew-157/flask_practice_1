@@ -13,25 +13,30 @@ def signup():
         email = request.form['email']
         username = request.form['username']
         password = request.form['password']
+        remember = True if request.form.get('remember') else False
+        errors = False
 
         if not username:
             flash('Username is required')
-            return redirect(url_for('auth.signup'))
+            errors = True
         elif not email:
             flash('Email is required.')
-            return redirect(url_for('auth.signup'))
+            errors = True
         elif not password:
             flash('Password is required.')
-            return redirect(url_for('auth.signup'))
+            errors = True
 
         user_with_email = User.query.filter_by(email=email).first()
         user_with_username = User.query.filter_by(username=username).first()
 
         if user_with_email:
             flash('Email already exists.')
-            return redirect(url_for('auth.signup'))
+            errors = True
         if user_with_username:
             flash('Username already exists.')
+            errors = True
+
+        if errors:
             return redirect(url_for('auth.signup'))
 
         new_user = User(email=email, username=username,
@@ -40,7 +45,9 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
 
-        return redirect(url_for('auth.login'))
+        login_user(user=new_user, remember=remember)
+
+        return redirect(url_for('main.index'))
 
     return render_template('auth/signup.html')
 
@@ -51,25 +58,29 @@ def login():
         email = request.form['email']
         password = request.form['password']
         remember = True if request.form.get('remember') else False
+        errors = False
 
         if not email:
             flash('Enter your email to login.')
-            return redirect(url_for('auth.login'))
-        elif not password:
+            errors = True
+        if not password:
             flash('Enter your password to login.')
-            return redirect(url_for('auth.login'))
+            errors = True
 
         user = User.query.filter_by(email=email).first()
 
         if not user:
             flash('Email was not found, try again.')
-            return redirect(url_for('auth.login'))
-        elif not check_password_hash(user.password, password):
+            errors = True
+        if not check_password_hash(user.password, password):
             flash('Password does not match, try again.')
+            errors = True
+
+        if errors:
             return redirect(url_for('auth.login'))
 
         login_user(user, remember=remember)
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('main.index'))
 
     return render_template('auth/login.html')
 
