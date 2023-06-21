@@ -19,10 +19,10 @@ def signup():
         if not username:
             flash('Username is required')
             errors = True
-        elif not email:
+        if not email:
             flash('Email is required.')
             errors = True
-        elif not password:
+        if not password:
             flash('Password is required.')
             errors = True
 

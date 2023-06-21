@@ -22,5 +22,5 @@ class Post(db.Model):
                         nullable=False)
     user = db.relationship('User', backref=db.backref('posts', lazy=True))
 
-    def __str(self):
+    def __str__(self):
         return self.title
