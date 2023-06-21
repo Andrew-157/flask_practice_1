@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 from .models import User
 from . import db
 
@@ -79,3 +79,39 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
+
+@bp.route('/change_profile/', methods=['GET', 'POST'])
+@login_required
+def change_profile():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        errors = False
+
+        if not email:
+            flash('Enter your new email.')
+            errors = True
+        if not username:
+            flash('Enter your new username.')
+            errors = True
+        user_with_email = User.query.filter_by(email=email).first()
+        user_with_username = User.query.filter_by(username=username).first()
+
+        if user_with_email and (user_with_email != current_user):
+            flash('User with this email already exists.')
+            errors = True
+        if user_with_username and (user_with_username != current_user):
+            flash('User with this username already exists.')
+            errors = True
+
+        if errors:
+            return redirect(url_for('auth.change_profile'))
+
+        current_user.username = username
+        current_user.email = email
+        db.session.commit()
+
+        return redirect(url_for('main.index'))
+
+    return render_template('auth/change_profile.html')
